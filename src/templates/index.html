@@ -1,0 +1,19 @@
+<h3>Last accessed sites:</h3>
+<table id="sites">
+  <tr>
+    <th>site</th>
+    <th>stat</th>
+    <th>impressions</th>
+    <th>last access</th>
+    <th>last access since</th>
+  </tr>
+{% for site in sites %}
+  <tr>
+    <td><a href="http://{{site.url}}">{{site.url}}</a></td>
+    <td><a href="/show/{{site.url}}">show</a></td>
+    <td>{{site.views}}</td>
+    <td>{{site.last_access|date:"d.m.Y H:i:s"}}</td>
+    <td>{{site.last_access|timesince}}</td>
+  </tr>
+{% endfor %}
+</table>
