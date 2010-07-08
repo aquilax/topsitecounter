@@ -64,4 +64,4 @@ def search_visists(site, all=0):
     tt = datetime.today()
     td = datetime(tt.year, tt.month, tt.day)
     v.filter("date =", td)
-  return v.fetch(100)
+  return v.fetch(60)

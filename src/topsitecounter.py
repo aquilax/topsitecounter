@@ -8,8 +8,6 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-webapp.template.register_template_library('customfilters')
-
 def get_viz(visits):
   t = '<script type="text/javascript" src="http://www.google.com/jsapi"></script>'
   t = t + '<script type="text/javascript">'
@@ -30,17 +28,20 @@ def get_viz(visits):
     t = t + "data.setValue("+str(cnt-i)+", 2, "+str(row.imp)+");"
     i = i+1
   t = t + "var chart = new google.visualization.LineChart(document.getElementById('chart_div'));"
-  t = t + "chart.draw(data, {width: 400, height: 240, min: 0, legend: 'bottom', title: 'Statistics'});"
+  t = t + "chart.draw(data, {width: 600, height: 400, min: 0, legend: 'bottom', title: 'Statistics'});"
   t = t + "}"
   t = t + "</script>"
+  t = t + '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script><script type="text/javascript">$(document).ready(function(){$("#sites").tablesorter();});</script>'
   return t
 
 class MainPage(webapp.RequestHandler):
   def get(self):
     q = MySite.all().order('-last_access')
+    include = '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script><script type="text/javascript">$(document).ready(function(){$("#sites").tablesorter();});</script>'
     data = {
       'sites': q.fetch(50),
       'title': "Home",
+      'include': include,
       'content': "templates/index.html",
     }
     path = os.path.join(os.path.dirname(__file__), 'main.html')

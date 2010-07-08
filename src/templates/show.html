@@ -13,12 +13,15 @@
     </td>
   </tr>
 </table>
-<table>
+<table id="sites">
+  <thead>
   <tr>
     <th>date</th>
     <th>visits</th>
     <th>impressions</th>
   </tr>
+  </thead>
+  <tbody>
 {% for visit in visits %}
   <tr>
     <td>{{visit.date}}</td>
@@ -26,4 +29,5 @@
     <td>{{visit.imp}}</td>
   </tr>
 {% endfor %}
+  </tbody>
 </table>
