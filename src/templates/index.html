@@ -4,7 +4,7 @@
   <tr>
     <th>site</th>
     <th>stat</th>
-    <th>impressions</th>
+    <th class="ar">impressions</th>
     <th>last access</th>
     <th>last access since</th>
   </tr>
@@ -15,7 +15,7 @@
     <td><img src="https://s2.googleusercontent.com/s2/favicons?domain_url=http://{{site.url}}/" alt="ico" />
     <a href="http://{{site.url}}">{{site.url}}</a></td>
     <td><a href="/show/{{site.url}}">show</a></td>
-    <td>{{site.views}}</td>
+    <td class="ar">{{site.views}}</td>
     <td>{{site.last_access|date:"d.m.Y H:i:s"}}</td>
     <td>{{site.last_access|timesince}}</td>
   </tr>

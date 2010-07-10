@@ -107,3 +107,5 @@ ul li{list-style:none}
 p{margin:0}
 span.tagMatches {margin-left: 10px;}
 span.tagMatches span {padding: 2px;margin-right: 4px;background-color: #0000AB;color: #fff;cursor: pointer;}
+td{border-bottom:1px solid silver}
+.ar{text-align:right}

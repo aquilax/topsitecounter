@@ -1,33 +1,33 @@
 <table>
   <tr>
-    <td>
-<ul>
-  <li><a href="http://{{site.url}}">{{site.url}}</a></li>
-  <li>{{site.views}}</li>
-  <li>{{site.last_access|date:"d.m.Y H:i:s"}}</li>
-  <li>{{site.last_access|timesince}}</li>
-</ul>
+    <td style="width:300px; vertical-align:top">
+      <ul>
+        <li><a href="http://{{site.url}}">{{site.url}}</a></li>
+        <li>{{site.views}}</li>
+        <li>{{site.last_access|date:"d.m.Y H:i:s"}}</li>
+        <li>{{site.last_access|timesince}}</li>
+      </ul>
+      <table id="sites">
+        <thead>
+        <tr>
+          <th>date</th>
+          <th class="ar">visits</th>
+          <th class="ar">impressions</th>
+        </tr>
+        </thead>
+        <tbody>
+      {% for visit in visits %}
+        <tr>
+          <td>{{visit.date}}</td>
+          <td class="ar">{{visit.vis}}</td>
+          <td class="ar">{{visit.imp}}</td>
+        </tr>
+      {% endfor %}
+        </tbody>
+      </table>
     </td>
-    <td>
-    <div id="chart_div"></div>
+    <td style="vertical-align:top">
+      <div id="chart_div"></div>
     </td>
   </tr>
-</table>
-<table id="sites">
-  <thead>
-  <tr>
-    <th>date</th>
-    <th>visits</th>
-    <th>impressions</th>
-  </tr>
-  </thead>
-  <tbody>
-{% for visit in visits %}
-  <tr>
-    <td>{{visit.date}}</td>
-    <td>{{visit.vis}}</td>
-    <td>{{visit.imp}}</td>
-  </tr>
-{% endfor %}
-  </tbody>
 </table>
