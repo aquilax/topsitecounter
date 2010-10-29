@@ -62,7 +62,6 @@ class ShowPage(webapp.RequestHandler):
   def get(self, ref):
     #try:
       site = searchsite(ref)
-      site = site[0]
       visits = search_visists(site, 1)
       data = {
         'site':site,

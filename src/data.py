@@ -10,7 +10,7 @@ __date__ ="$Feb 20, 2010 8:15:35 AM$"
 
 class MySite(db.Model):
   url = db.StringProperty(verbose_name="Url")
-  created = db.DateTimeProperty(verbose_name="Addred", auto_now_add=True)
+  created = db.DateTimeProperty(verbose_name="Added", auto_now_add=True)
   views = db.IntegerProperty(default=1)
   last_access = db.DateTimeProperty(verbose_name="Last accessed", auto_now_add=True)
 
@@ -34,7 +34,6 @@ def save(ref, ip):
     visits.site = site
     visits.put()
   else:
-    site = site[0]
     site.last_access = datetime.now();
     site.views = site.views + 1;
     site.put()
@@ -53,8 +52,20 @@ def save(ref, ip):
       visits.imp = visits.imp+1;
       visits.put()
 
+#def searchsite(ref):
+#  return MySite.all().filter('url =', ref).fetch(1)
 def searchsite(ref):
-  return MySite.all().filter('url =', ref).fetch(1)
+  hash = 'ref:'+ref;
+  id = memcache.get(hash);
+  if (id):
+    return MySite.get_by_id(id)
+  else:
+    site = MySite.all().filter('url =', ref).fetch(1)
+    if (site):
+      site = site[0]
+      id = site.key().id()
+      memcache.add(key=hash, value=id)
+    return site;
 
 def search_visists(site, all=0):
   v = MyVisit.all()
