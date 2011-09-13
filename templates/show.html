@@ -1,0 +1,42 @@
+<table>
+  <tr>
+    <td style="width:300px; vertical-align:top">
+      <ul>
+        <li><a href="http://{{site.url}}">{{site.url}}</a></li>
+        <li>Views: {{site.views}}</li>
+        <li>{{site.last_access|date:"d.m.Y H:i:s"}}</li>
+        <li>{{site.last_access|timesince}}</li>
+      </ul>
+      <div id="table_div"></div>
+    </td>
+    <td style="vertical-align:top">
+      <div id="chart_div"></div>
+    </td>
+  </tr>
+</table>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["linechart", "table"]});
+  google.setOnLoadCallback(draw);
+  function draw() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('date', 'Date');
+    data.addColumn('number', 'Visits');
+    data.addColumn('number', 'Impressions');
+    data.addRows([{% for visit in visits %}[new Date('{{visit.date}}'), {{visit.vis}}, {{visit.imp}}],{% endfor %}]);
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+    data.sort({column:0});
+    chart.draw(data, {width: 600, height: 400, min: 0, legend: 'bottom', title: 'Statistics'});
+    data.sort({column:0, desc:true});
+    var table = new google.visualization.Table(document.getElementById('table_div'));
+    var avgv = ({% for visit in visits %}+{{visit.vis}}{% endfor %})/{{visits|length}};
+    var avgi = ({% for visit in visits %}+{{visit.imp}}{% endfor %})/{{visits|length}};
+    var formatterv = new google.visualization.ArrowFormat({base: avgv});
+    formatterv.format(data, 1);
+    var formatteri = new google.visualization.ArrowFormat({base: avgi});
+    formatteri.format(data, 2);
+    var formatterd= new google.visualization.DateFormat({pattern: 'E d/MM/yy'});
+    formatterd.format(data, 0);
+    table.draw(data, {allowHtml: true});
+  }
+</script>

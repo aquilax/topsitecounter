@@ -8,32 +8,6 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-def get_viz(visits):
-  t = '<script type="text/javascript" src="http://www.google.com/jsapi"></script>'
-  t = t + '<script type="text/javascript">'
-  t = t + '    google.load("visualization", "1", {packages:["linechart"]});'
-  t = t + '    google.setOnLoadCallback(drawChart);'
-  t = t + '    function drawChart() {'
-  t = t + '      var data = new google.visualization.DataTable();'
-  t = t + "      data.addColumn('string', 'Date');"
-  t = t + "      data.addColumn('number', 'visits');"
-  t = t + "      data.addColumn('number', 'impressions');"
-  cnt = len(visits)
-  t = t + '     data.addRows('+str(cnt)+');';
-  i = 0
-  cnt = cnt-1
-  for row in visits:
-    t = t + "data.setValue("+str(cnt-i)+", 0, '"+str(row.date)+"');"
-    t = t + "data.setValue("+str(cnt-i)+", 1, "+str(row.vis)+");"
-    t = t + "data.setValue("+str(cnt-i)+", 2, "+str(row.imp)+");"
-    i = i+1
-  t = t + "var chart = new google.visualization.LineChart(document.getElementById('chart_div'));"
-  t = t + "chart.draw(data, {width: 600, height: 400, min: 0, legend: 'bottom', title: 'Statistics'});"
-  t = t + "}"
-  t = t + "</script>"
-  t = t + '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script><script type="text/javascript">$(document).ready(function(){$("#sites").tablesorter();});</script>'
-  return t
-
 class MainPage(webapp.RequestHandler):
   def get(self):
     q = MySite.all().order('-last_access')
@@ -60,20 +34,19 @@ class TrackPage(webapp.RequestHandler):
 class ShowPage(webapp.RequestHandler):
 
   def get(self, ref):
-    #try:
+    try:
       site = searchsite(ref)
       visits = search_visists(site, 1)
       data = {
         'site':site,
         'visits': visits,
         'title': ref,
-        'include': get_viz(visits),
         'content': "templates/show.html",
       }
       path = os.path.join(os.path.dirname(__file__), 'main.html')
       self.response.out.write(template.render(path, data))
-    #except:
-    #  self.error(404)
+    except:
+      self.error(404)
 
 application = webapp.WSGIApplication(
                                      [('/', MainPage),
