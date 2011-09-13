@@ -59,10 +59,12 @@ def save(ref, ip):
   # sum www-s
   if ref.startswith('www.'):
     ref = ref[4:]
+  client = memcache.Client()
+  
   site = searchsite(ref)
   hash = ref + "|" + ip;
   if (not site):
-    memcache.add(key=hash, value=1, time=86400);
+    client.add(key=hash, value=1, time=86400);
     site = MySite();
     site.url = ref
     site.put()
@@ -72,11 +74,11 @@ def save(ref, ip):
   else:
     imp = 1
     vis = 0
-    data = memcache.get(hash)
+    data = client.get(hash)
     if data is None:
-      memcache.add(key=hash, value=1, time=86400);
+      client.add(key=hash, value=1, time=86400);
       vis = 1
-    increment_multi_counter(site.key().id(), vis, imp)
+    increment_multi_counter(client, site.key().id(), vis, imp)
 
 def searchsite(ref):
   hash = 'ref:' + ref;
@@ -132,7 +134,7 @@ def update(key, vis, imp):
     visits.put()
 
 
-def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=60):
+def increment_multi_counter(client, key='nil', vis=0, imp=0, update_interval=60):
   """Increments the memcache counter for the specified cumulative contribution
     for the specified race and/or user.
     Args:
@@ -145,9 +147,9 @@ def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=60):
   counts_key = "ctr_V:%s" % (key, )
 
   delta = pack_counts(vis, imp, 0, 0)
-  if memcache.add(lock_key, None, time=update_interval):
+  if client.add(lock_key, None, time=update_interval):
     # time to update the DB
-    prev_packed_counts = int(memcache.get(counts_key) or 0)
+    prev_packed_counts = int(client.get(counts_key) or 0)
     new_counts = unpack_counts(prev_packed_counts + delta)
 
     def tx():
@@ -157,12 +159,12 @@ def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=60):
     try:
       tx();
       #db.run_in_transaction(tx)
-      if prev_packed_counts > 0 and memcache.decr(counts_key, delta=prev_packed_counts) is None:
+      if prev_packed_counts > 0 and client.decr(counts_key, delta=prev_packed_counts) is None:
         logging.warn("counter %s could not be decremented (will double-count): %s" % (key, unpack_counts(prev_packed_counts)))
     except db.Error:
       # db failed to update: we'll try again later; just add delta to memcache like usual for now
       logging.error(db.Error);
-      memcache.incr_async(counts_key, delta, initial_value=0)
+      client.incr_async(counts_key, delta, initial_value=0)
   else:
     # Just update memcache
-    memcache.incr_async(counts_key, delta, initial_value=0)
+    client.incr_async(counts_key, delta, initial_value=0)
