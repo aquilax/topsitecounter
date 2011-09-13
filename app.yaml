@@ -1,6 +1,7 @@
 application: topsitecounter
-version: 3
+version: 2
 runtime: python
+api_version: 1
 
 handlers:
 - url: /css

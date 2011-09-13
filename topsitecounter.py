@@ -2,6 +2,9 @@
 import os
 from base64 import b64decode
 from urlparse import urlparse
+from google.appengine.dist import use_library
+use_library('django', '0.96')
+
 
 from data import *
 from google.appengine.ext.webapp import template
@@ -11,11 +14,9 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 class MainPage(webapp.RequestHandler):
   def get(self):
     q = MySite.all().order('-last_access')
-    include = '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script><script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script><script type="text/javascript">$(document).ready(function(){$("#sites").tablesorter();});</script>'
     data = {
       'sites': q.fetch(50),
       'title': "Home",
-      'include': include,
       'content': "templates/index.html",
     }
     path = os.path.join(os.path.dirname(__file__), 'main.html')

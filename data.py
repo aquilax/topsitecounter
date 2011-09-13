@@ -78,8 +78,6 @@ def save(ref, ip):
       vis = 1
     increment_multi_counter(site.key().id(), vis, imp)
 
-#def searchsite(ref):
-#  return MySite.all().filter('url =', ref).fetch(1)
 def searchsite(ref):
   hash = 'ref:' + ref;
   id = memcache.get(hash);
@@ -134,7 +132,7 @@ def update(key, vis, imp):
     visits.put()
 
 
-def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=20):
+def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=60):
   """Increments the memcache counter for the specified cumulative contribution
     for the specified race and/or user.
     Args:
@@ -156,7 +154,6 @@ def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=20):
       vis = new_counts[0]
       imp = new_counts[1]
       update(key, vis, imp)
-
     try:
       tx();
       #db.run_in_transaction(tx)
@@ -165,7 +162,7 @@ def increment_multi_counter(key='nil', vis=0, imp=0, update_interval=20):
     except db.Error:
       # db failed to update: we'll try again later; just add delta to memcache like usual for now
       logging.error(db.Error);
-      memcache.incr(counts_key, delta, initial_value=0)
+      memcache.incr_async(counts_key, delta, initial_value=0)
   else:
     # Just update memcache
-    memcache.incr(counts_key, delta, initial_value=0)
+    memcache.incr_async(counts_key, delta, initial_value=0)
