@@ -2,9 +2,6 @@
 import os
 from base64 import b64decode
 from urlparse import urlparse
-from google.appengine.dist import use_library
-use_library('django', '0.96')
-
 
 from data import *
 from google.appengine.ext.webapp import template
@@ -49,12 +46,12 @@ class ShowPage(webapp.RequestHandler):
     except:
       self.error(404)
 
-application = webapp.WSGIApplication(
-                                     [('/', MainPage),
-                                      ('/t', TrackPage),
-                                      ('/show/(.*)', ShowPage),
-                                      ],
-                                     debug=False)
+app = webapp.WSGIApplication(
+                             [('/', MainPage),
+                              ('/t', TrackPage),
+                              ('/show/(.*)', ShowPage),
+                              ],
+                             debug=False)
 
 def profile_main():
     # This is the main function for profiling
@@ -72,7 +69,7 @@ def profile_main():
     print "</pre>"
 
 def real_main():
-    run_wsgi_app(application)
+    run_wsgi_app(app)
 
 main = real_main
 
